@@ -1,0 +1,34 @@
+{
+  "name": "electron-attendance",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Davide Cappa",
+  "description": "Electron-based desktop app for tracking attendance and speaking order during daily standup meetings. Easily manage presence, speaking turns, and generate meeting logs.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.davide.attendance",
+    "productName": "Daily Attendance",
+    "files": [
+      "main.js",
+      "preload.js",
+      "people.json",
+      "logs/**",
+      "renderer/**/*"
+    ],
+    "icon": "assets/attendance_icon.ico",
+    "extraResources": [
+      "people.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3"
+  }
+}
