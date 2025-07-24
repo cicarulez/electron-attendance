@@ -22,7 +22,7 @@
 
 ## 🖼️ Screenshot
 
-![Screenshot](https://raw.githubusercontent.com/cicarulez/electron-attendance/main/docs/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/cicarulez/electron-attendance/main/docs/screenshot_v1.1.0.png)
 
 ---
 
