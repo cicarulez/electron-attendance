@@ -14,13 +14,16 @@
 - Automatically **save logs** (as JSON) at the end of each session
 - Compact interface, always on top
 - Starts docked to the **right side** of the screen
+- **Settings persistence**: remembers dark mode, compact mode, and always-on-top between sessions
+- **Smart window behavior**: always re-anchors to the right side when changing mode
+- **Improved editing**: edits to names are preserved even when adding new participants
 
 ---
 
 ## 🖼️ Screenshot
 
 ```html
-![screenshot](docs/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/cicarulez/electron-attendance/main/docs/screenshot.png)
 ```
 
 ---
