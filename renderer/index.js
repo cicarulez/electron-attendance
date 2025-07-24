@@ -1,7 +1,36 @@
+// (function applyInitialSettings() {
+//     if (localStorage.getItem('darkMode') === '1') {
+//         document.body.classList.add('dark-mode');
+//     }
+//     if (localStorage.getItem('compactMode') === '1') {
+//         document.body.classList.add('small-app');
+//     }
+// })();
+
+(function applyInitialSettings() {
+    if (localStorage.getItem('darkMode') === '1') {
+        document.body.classList.add('dark-mode');
+    }
+    if (localStorage.getItem('compactMode') === '1') {
+        document.body.classList.add('small-app');
+    }
+
+    // ✅ Invio delle preferenze al processo main
+    const compact = localStorage.getItem('compactMode') === '1';
+    const alwaysOnTop = localStorage.getItem('alwaysOnTop') === '1';
+
+    window.electronAPI.restorePreferences({
+        compactMode: compact,
+        alwaysOnTop: alwaysOnTop
+    });
+})();
+
+
 let people = [];
-const state = {}; // id -> { present: true, interventionOrder, interventionTime }
+const state = {};
 let isAllCollapsed = false;
 let currentNotePersonId = null;
+let editablePeople = null;
 
 const renderLists = () => {
     const allList = document.getElementById('allList');
@@ -11,8 +40,9 @@ const renderLists = () => {
     presentList.innerHTML = '';
     spokenList.innerHTML = '';
 
-    // "Tutti" e "Presenti"
-    people.forEach(person => {
+    const sortedPeople = [...people].sort((a, b) => a.name.localeCompare(b.name));
+
+    sortedPeople.forEach(person => {
         const s = state[person.id] || {};
         const div = document.createElement('div');
         div.className = 'list-group-item d-flex justify-content-between align-items-center text-start';
@@ -28,6 +58,7 @@ const renderLists = () => {
             };
             div.append(name);
             if (!isAllCollapsed) allList.appendChild(div);
+
         } else if (!s.interventionOrder) {
             const btn = document.createElement('span');
             btn.textContent = '💬';
@@ -57,6 +88,7 @@ const renderLists = () => {
             presentList.appendChild(div);
         }
     });
+
 
     const spoken = people
         .filter(p => state[p.id]?.interventionOrder)
@@ -149,8 +181,10 @@ document.getElementById('toggleAllBtn').addEventListener('click', () => {
     renderLists();
 });
 
-// Editor
 document.getElementById('editBtn').addEventListener('click', () => {
+    if (!editablePeople) {
+        editablePeople = JSON.parse(JSON.stringify(people)); // deep copy
+    }
     refreshEditor();
     const modal = new bootstrap.Modal(document.getElementById('editModal'));
     modal.show();
@@ -158,9 +192,22 @@ document.getElementById('editBtn').addEventListener('click', () => {
 
 function refreshEditor() {
     const form = document.getElementById('editForm');
+
+    const existingInputs = form.querySelectorAll('input[data-person-id]');
+    existingInputs.forEach(input => {
+        const person = editablePeople.find(p => p.id === input.dataset.personId);
+        if (person) {
+            person.name = input.value.trim();
+        }
+    });
+
     form.innerHTML = '';
 
-    people.forEach((person, index) => {
+    editablePeople.forEach((person, index) => {
+        if (!person.id) {
+            person.id = generateUniqueId();
+        }
+
         const row = document.createElement('div');
         row.className = 'input-group mb-1';
 
@@ -168,58 +215,41 @@ function refreshEditor() {
         input.type = 'text';
         input.value = person.name;
         input.className = 'form-control';
-
-        const up = document.createElement('button');
-        up.className = 'btn btn-outline-secondary';
-        up.textContent = '↑';
-        up.onclick = () => {
-            if (index > 0) {
-                [people[index - 1], people[index]] = [people[index], people[index - 1]];
-                refreshEditor();
-            }
-        };
-
-        const down = document.createElement('button');
-        down.className = 'btn btn-outline-secondary';
-        down.textContent = '↓';
-        down.onclick = () => {
-            if (index < people.length - 1) {
-                [people[index + 1], people[index]] = [people[index], people[index + 1]];
-                refreshEditor();
-            }
-        };
+        input.dataset.personId = person.id;
 
         const del = document.createElement('button');
         del.className = 'btn btn-outline-danger';
         del.textContent = '🗑️';
         del.onclick = () => {
-            people.splice(index, 1);
+            editablePeople.splice(index, 1);
             refreshEditor();
         };
 
-        row.append(input, up, down, del);
+        row.append(input, del);
         form.appendChild(row);
     });
 }
 
 document.getElementById('addPerson').addEventListener('click', () => {
-    people.push({ id: '', name: 'Nuovo Nome' });
+    editablePeople.push({ id: generateUniqueId(), name: 'Nuovo Nome' });
     refreshEditor();
 });
 
 document.getElementById('savePeopleBtn').addEventListener('click', async () => {
     const inputs = document.querySelectorAll('#editForm input');
-    const newPeople = Array.from(inputs).map((el, i) => ({
-        id: (i + 1).toString(),
+    const newPeople = Array.from(inputs).map(el => ({
+        id: el.dataset.personId,
         name: el.value.trim()
     }));
 
     await window.electronAPI.savePeople(newPeople);
     people = newPeople;
+    editablePeople = null;
     Object.keys(state).forEach(k => delete state[k]);
     renderLists();
     bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
 });
+
 
 document.getElementById('saveNoteBtn').addEventListener('click', () => {
     const note = document.getElementById('noteText').value.trim();
@@ -229,3 +259,49 @@ document.getElementById('saveNoteBtn').addEventListener('click', () => {
     }
     bootstrap.Modal.getInstance(document.getElementById('noteModal')).hide();
 });
+
+document.getElementById('settingsBtn').addEventListener('click', () => {
+    const darkEnabled = localStorage.getItem('darkMode') === '1';
+    const smallEnabled = localStorage.getItem('compactMode') === '1';
+    const topEnabled = localStorage.getItem('alwaysOnTop') === '1';
+
+    document.getElementById('darkModeToggle').checked = darkEnabled;
+    document.getElementById('smallModeToggle').checked = smallEnabled;
+    document.getElementById('alwaysOnTopToggle').checked = topEnabled;
+
+    const modal = new bootstrap.Modal(document.getElementById('settingsModal'));
+    modal.show();
+});
+
+
+document.getElementById('darkModeToggle').addEventListener('change', (e) => {
+    const enabled = e.target.checked;
+    document.body.classList.toggle('dark-mode', enabled);
+    localStorage.setItem('darkMode', enabled ? '1' : '0');
+});
+
+document.getElementById('smallModeToggle').addEventListener('change', (e) => {
+    const enabled = e.target.checked;
+    document.body.classList.toggle('small-app', enabled);
+    localStorage.setItem('compactMode', enabled ? '1' : '0');
+    if (enabled) {
+        window.electronAPI.setSmallMode();
+    } else {
+        window.electronAPI.setNormalMode();
+    }
+});
+
+document.getElementById('alwaysOnTopToggle').addEventListener('change', (e) => {
+    const enabled = e.target.checked;
+    localStorage.setItem('alwaysOnTop', enabled ? '1' : '0');
+    window.electronAPI.setAlwaysOnTop(enabled);
+});
+
+document.getElementById('editModal').addEventListener('hidden.bs.modal', () => {
+    editablePeople = null;
+});
+
+
+function generateUniqueId() {
+    return `p_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+}

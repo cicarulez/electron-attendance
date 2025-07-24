@@ -35,6 +35,36 @@ function createWindow() {
     if (app.isPackaged) {
         win.removeMenu();
     }
+
+    ipcMain.on('set-small-mode', () => {
+        const screenWidth = screen.getPrimaryDisplay().workArea.width;
+        const [_, h] = win.getSize();
+        win.setBounds({ x: screenWidth - 240, y: 0, width: 240, height: h });
+    });
+
+    ipcMain.on('set-normal-mode', () => {
+        const screenWidth = screen.getPrimaryDisplay().workArea.width;
+        const [_, h] = win.getSize();
+        win.setBounds({ x: screenWidth - 300, y: 0, width: 300, height: h });
+    });
+
+    ipcMain.on('set-always-on-top', (event, value) => {
+        win.setAlwaysOnTop(!!value);
+    });
+
+    ipcMain.on('restore-preferences', (_event, prefs) => {
+        const screenWidth = screen.getPrimaryDisplay().workArea.width;
+        const [_, h] = win.getSize();
+
+        if (prefs.compactMode) {
+            win.setBounds({ x: screenWidth - 240, y: 0, width: 240, height: h });
+        } else {
+            win.setBounds({ x: screenWidth - 300, y: 0, width: 300, height: h });
+        }
+
+        win.setAlwaysOnTop(!!prefs.alwaysOnTop);
+    });
+
 }
 
 app.whenReady().then(() => {

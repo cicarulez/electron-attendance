@@ -1,10 +1,129 @@
+body.dark-mode {
+    background-color: #2b2b2b;
+    color: #f0f0f0;
+}
+
+body {
+    padding: 1rem;
+}
+
+body.small-app {
+    padding: 0.5rem;
+}
+
+body.small-app {
+    font-size: 0.85rem;
+}
+
+body.small-app .btn,
+body.small-app .form-control,
+body.small-app .list-group-item {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+body.dark-mode h2,
+body.dark-mode h5 {
+    color: #f0f0f0;
+}
+
+body.dark-mode .btn,
+body.dark-mode .btn-sm,
+body.dark-mode .btn-outline-secondary {
+    color: #ffffff;
+    background-color: #3c3f41;
+    border: 1px solid #5c5c5c;
+}
+
+body.dark-mode .btn:hover,
+body.dark-mode .btn:focus {
+    background-color: #4e5052;
+    border-color: #6c6c6c;
+}
+
+body.dark-mode .btn-success {
+    background-color: #4CAF50;
+    border-color: #45A049;
+}
+
+body.dark-mode .btn-success:hover {
+    background-color: #45A049;
+}
+
+body.dark-mode .btn-outline-danger {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+body.dark-mode .btn-outline-danger:hover {
+    background-color: #ff6b6b;
+    color: #2b2b2b;
+}
+
+body.dark-mode input.form-control,
+body.dark-mode textarea.form-control {
+    background-color: #3c3f41;
+    color: #ffffff;
+    border: 1px solid #5c5c5c;
+}
+
+body.dark-mode .list-group-item {
+    background-color: #3c3f41;
+    border: 1px solid #4a4a4a;
+    color: #ffffff;
+}
+
+body.dark-mode .modal-content {
+    background-color: #2b2b2b;
+    color: #f0f0f0;
+    border: 1px solid #444;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+    border-color: #444;
+}
+
+body.dark-mode input.form-control::placeholder,
+body.dark-mode textarea.form-control::placeholder {
+    color: #bbbbbb;
+}
+
+/* Per compatibilità cross-browser */
+body.dark-mode input.form-control::-webkit-input-placeholder,
+body.dark-mode textarea.form-control::-webkit-input-placeholder {
+    color: #bbbbbb;
+}
+
+body.dark-mode input.form-control::-moz-placeholder,
+body.dark-mode textarea.form-control::-moz-placeholder {
+    color: #bbbbbb;
+    opacity: 1;
+}
+
+body.dark-mode input.form-control:-ms-input-placeholder,
+body.dark-mode textarea.form-control:-ms-input-placeholder {
+    color: #bbbbbb;
+}
+
+body.dark-mode input.form-control::-ms-input-placeholder,
+body.dark-mode textarea.form-control::-ms-input-placeholder {
+    color: #bbbbbb;
+}
+
 .list-group-item {
     cursor: pointer;
     transition: background-color 0.2s;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
 }
 
 .list-group-item:hover {
     background-color: #f8f9fa;
+}
+
+body.dark-mode .list-group-item:hover {
+    background-color: #505050;
 }
 
 .list-group-item span {
@@ -14,4 +133,102 @@
 
 .list-group-item span.fw-bold {
     width: 40px;
+}
+
+.text-muted {
+    color: #a0a0a0 !important;
+}
+
+body.small-app h1,
+body.small-app h2,
+body.small-app h3,
+body.small-app h4,
+body.small-app h5,
+body.small-app h6 {
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+body.small-app p {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+}
+
+body.small-app header,
+body.small-app footer,
+body.small-app main > div {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem;
+}
+
+body.small-app .list-group-item {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+body.small-app .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+body.small-app .form-control,
+body.small-app textarea {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+}
+
+body.small-app .modal-content {
+    font-size: 0.85rem;
+}
+
+body.small-app .modal-header,
+body.small-app .modal-footer {
+    padding: 0.5rem 1rem;
+}
+
+body.small-app .mb-4 {
+    margin-bottom: 0.5rem !important;
+}
+
+body.small-app .mb-4 {
+    margin-bottom: 0.5rem !important;
+}
+
+body.small-app .mb-3 {
+    margin-bottom: 0.4rem !important;
+}
+
+body.small-app .mt-4 {
+    margin-top: 0.5rem !important;
+}
+
+body.small-app .pt-3 {
+    padding-top: 0.4rem !important;
+}
+
+body.small-app .gap-3 {
+    gap: 0.5rem !important;
+}
+
+body.small-app footer {
+    margin-top: 1rem !important;
+    padding-top: 0.5rem !important;
+}
+
+body.small-app footer .mb-3 {
+    margin-bottom: 0 !important;
+}
+
+body.small-app footer .gap-3 {
+    gap: 0.5rem !important;
+}
+
+body.small-app footer {
+    margin-bottom: 0 !important;
+}
+
+body.small-app footer .pt-3 {
+    padding-top: 0 !important;
 }
