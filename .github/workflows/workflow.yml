@@ -16,13 +16,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '23.10'
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build Electron app
         run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
