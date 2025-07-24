@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Build Electron app
-        run: npm run dist
+        run: npm run build
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
