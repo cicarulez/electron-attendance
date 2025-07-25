@@ -1,6 +1,6 @@
 {
   "name": "electron-attendance",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "license": "MIT",
   "author": "Davide Cappa",
   "description": "Electron-based desktop app for tracking attendance and speaking order during daily standup meetings. Easily manage presence, speaking turns, and generate meeting logs.",
