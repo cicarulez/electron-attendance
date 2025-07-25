@@ -1,12 +1,3 @@
-// (function applyInitialSettings() {
-//     if (localStorage.getItem('darkMode') === '1') {
-//         document.body.classList.add('dark-mode');
-//     }
-//     if (localStorage.getItem('compactMode') === '1') {
-//         document.body.classList.add('small-app');
-//     }
-// })();
-
 (function applyInitialSettings() {
     if (localStorage.getItem('darkMode') === '1') {
         document.body.classList.add('dark-mode');
@@ -15,7 +6,6 @@
         document.body.classList.add('small-app');
     }
 
-    // ✅ Invio delle preferenze al processo main
     const compact = localStorage.getItem('compactMode') === '1';
     const alwaysOnTop = localStorage.getItem('alwaysOnTop') === '1';
 
@@ -142,9 +132,26 @@ const renderLists = () => {
 };
 
 window.electronAPI.loadPeople().then(data => {
+    const seenIds = new Set();
+    let hasDuplicates = false;
+
+    data.forEach(person => {
+        if (!person.id || seenIds.has(person.id)) {
+            person.id = generateUniqueId();
+            hasDuplicates = true;
+        }
+        seenIds.add(person.id);
+    });
+
     people = data;
+
+    if (hasDuplicates) {
+        window.electronAPI.savePeople(people);
+    }
+
     renderLists();
 });
+
 
 document.getElementById('saveBtn').addEventListener('click', async () => {
     const peopleWithData = people.map(person => {
@@ -161,18 +168,52 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
                 result.note = entry.note;
             }
         }
-
         return result;
     });
 
+    const someonePresent = peopleWithData.some(p => p.present);
+    if (!someonePresent) {
+        console.log('No one present: skipping log save.');
+        window.close();
+        return;
+    }
+
+    const now = Date.now();
+
+    const intervenedPeople = peopleWithData
+        .filter(p => p.interventionOrder && p.interventionTime)
+        .sort((a, b) => a.interventionOrder - b.interventionOrder);
+
+    let totalDuration = 0;
+
+    for (let i = 0; i < intervenedPeople.length; i++) {
+        const start = new Date(intervenedPeople[i].interventionTime).getTime();
+        const end = (i + 1 < intervenedPeople.length)
+            ? new Date(intervenedPeople[i + 1].interventionTime).getTime()
+            : now;
+
+        const duration = Math.max(0, Math.floor((end - start) / 1000));
+        intervenedPeople[i].duration = duration;
+        totalDuration += duration;
+    }
+
+    for (const person of peopleWithData) {
+        const match = intervenedPeople.find(p => p.id === person.id);
+        if (match && match.duration != null) {
+            person.duration = match.duration;
+        }
+    }
+
     const log = {
         timestamp: new Date().toISOString(),
+        duration: totalDuration,
         people: peopleWithData
     };
 
     await window.electronAPI.saveLog(log);
     window.close();
 });
+
 
 document.getElementById('toggleAllBtn').addEventListener('click', () => {
     isAllCollapsed = !isAllCollapsed;
