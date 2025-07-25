@@ -89,6 +89,47 @@ app.whenReady().then(() => {
         fs.writeFileSync(filename, JSON.stringify(data, null, 2), 'utf-8');
     });
 
+    ipcMain.handle('open-log-analyzer', () => {
+        const analyzerWindow = new BrowserWindow({
+            width: 900,
+            height: 600,
+            title: 'Log Analyzer',
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                contextIsolation: true,
+                nodeIntegration: false
+            }
+        });
+
+        analyzerWindow.loadFile('renderer/analyzer.html');
+
+        if (app.isPackaged) {
+            analyzerWindow.removeMenu();
+        }
+    });
+
+    ipcMain.handle('get-log-files', async () => {
+        const logsDir = path.join(app.getPath('userData'), 'logs');
+        if (!fs.existsSync(logsDir)) return [];
+        return fs.readdirSync(logsDir).filter(f => f.endsWith('.json'));
+    });
+
+    ipcMain.handle('read-log-file', async (_event, filename) => {
+        const logsDir = path.join(app.getPath('userData'), 'logs');
+        const filePath = path.join(logsDir, filename);
+        if (!fs.existsSync(filePath)) return null;
+        const data = fs.readFileSync(filePath, 'utf-8');
+        return JSON.parse(data);
+    });
+
+    ipcMain.handle('delete-log', async (_event, fileName) => {
+        const dir = path.join(app.getPath('userData'), 'logs');
+        const fullPath = path.join(dir, fileName);
+        if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+        }
+    });
+
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });

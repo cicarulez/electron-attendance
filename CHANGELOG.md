@@ -1,5 +1,29 @@
 # 📦 Changelog
 
+## [1.2.0] - 2025-07-25
+
+### Features
+
+- **Logs**
+  - Calculate and store duration for each speaker based on speaking order and timestamps
+  - Save total session duration
+  - Skip saving log if no one is marked as present
+
+- **Participants**
+  - Ensure all participant IDs are unique on load
+  - Auto-generate missing or duplicate IDs and persist updated list
+
+- **UI**
+  - Replace “Close” button with “Save and Close” for clarity
+  - Add responsive dropdown (hamburger) menu for compact UIs
+  - Include toggles for dark mode, compact mode, and always-on-top
+  - Apply dark and compact mode styles consistently across all views, including analyzer
+
+- **Log Analyzer**
+  - Replace filenames with readable summaries: timestamp, number of present people, and session duration
+  - View full log content in a read-only modal on click
+  - Add delete button with confirmation modal for each log entry
+
 ## [1.1.0] - 2025-07-24
 
 ### Features

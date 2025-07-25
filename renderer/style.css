@@ -22,6 +22,17 @@ body.small-app .list-group-item {
     font-size: 0.85rem;
 }
 
+body.small-app .dropdown-menu {
+    font-size: 0.85rem;
+    padding: 0.25rem;
+    min-width: auto;
+}
+
+body.small-app .dropdown-item {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+}
+
 body.dark-mode h2,
 body.dark-mode h5 {
     color: #f0f0f0;
@@ -110,6 +121,20 @@ body.dark-mode input.form-control::-ms-input-placeholder,
 body.dark-mode textarea.form-control::-ms-input-placeholder {
     color: #bbbbbb;
 }
+
+body.dark-mode .dropdown-menu {
+    background-color: #3c3f41;
+    border: 1px solid #5c5c5c;
+}
+
+body.dark-mode .dropdown-item {
+    color: #ffffff;
+}
+
+body.dark-mode .dropdown-item:hover {
+    background-color: #505050;
+}
+
 
 .list-group-item {
     cursor: pointer;
@@ -231,4 +256,14 @@ body.small-app footer {
 
 body.small-app footer .pt-3 {
     padding-top: 0 !important;
+}
+
+#logContent {
+    font-family: monospace;
+    font-size: 0.85rem;
+    background-color: #f8f9fa;
+}
+body.dark-mode #logContent {
+    background-color: #2e2e2e !important;
+    color: #eee;
 }

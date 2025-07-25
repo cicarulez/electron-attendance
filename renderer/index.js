@@ -222,15 +222,6 @@ document.getElementById('toggleAllBtn').addEventListener('click', () => {
     renderLists();
 });
 
-document.getElementById('editBtn').addEventListener('click', () => {
-    if (!editablePeople) {
-        editablePeople = JSON.parse(JSON.stringify(people)); // deep copy
-    }
-    refreshEditor();
-    const modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
-});
-
 function refreshEditor() {
     const form = document.getElementById('editForm');
 
@@ -296,24 +287,10 @@ document.getElementById('saveNoteBtn').addEventListener('click', () => {
     const note = document.getElementById('noteText').value.trim();
     if (currentNotePersonId && state[currentNotePersonId]) {
         state[currentNotePersonId].note = note;
-        renderLists(); // aggiorna il tooltip
+        renderLists();
     }
     bootstrap.Modal.getInstance(document.getElementById('noteModal')).hide();
 });
-
-document.getElementById('settingsBtn').addEventListener('click', () => {
-    const darkEnabled = localStorage.getItem('darkMode') === '1';
-    const smallEnabled = localStorage.getItem('compactMode') === '1';
-    const topEnabled = localStorage.getItem('alwaysOnTop') === '1';
-
-    document.getElementById('darkModeToggle').checked = darkEnabled;
-    document.getElementById('smallModeToggle').checked = smallEnabled;
-    document.getElementById('alwaysOnTopToggle').checked = topEnabled;
-
-    const modal = new bootstrap.Modal(document.getElementById('settingsModal'));
-    modal.show();
-});
-
 
 document.getElementById('darkModeToggle').addEventListener('change', (e) => {
     const enabled = e.target.checked;
@@ -342,6 +319,31 @@ document.getElementById('editModal').addEventListener('hidden.bs.modal', () => {
     editablePeople = null;
 });
 
+document.getElementById('settingsDropdown').addEventListener('click', () => {
+    const darkEnabled = localStorage.getItem('darkMode') === '1';
+    const smallEnabled = localStorage.getItem('compactMode') === '1';
+    const topEnabled = localStorage.getItem('alwaysOnTop') === '1';
+
+    document.getElementById('darkModeToggle').checked = darkEnabled;
+    document.getElementById('smallModeToggle').checked = smallEnabled;
+    document.getElementById('alwaysOnTopToggle').checked = topEnabled;
+
+    const modal = new bootstrap.Modal(document.getElementById('settingsModal'));
+    modal.show();
+});
+
+document.getElementById('analyzeDropdown').addEventListener('click', () => {
+    window.electronAPI.openLogAnalyzer();
+});
+
+document.getElementById('editDropdown').addEventListener('click', () => {
+    if (!editablePeople) {
+        editablePeople = JSON.parse(JSON.stringify(people));
+    }
+    refreshEditor();
+    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
+});
 
 function generateUniqueId() {
     return `p_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
