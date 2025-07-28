@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+let analyzerWindow = null;
+
 function getPeoplePath() {
     const userPath = app.getPath('userData');
     const target = path.join(userPath, 'people.json');
@@ -53,17 +55,21 @@ function createWindow() {
     });
 
     ipcMain.on('restore-preferences', (_event, prefs) => {
-        const screenWidth = screen.getPrimaryDisplay().workArea.width;
+        const bounds = win.getBounds();
+        const currentDisplay = screen.getDisplayMatching(bounds);
+        const screenWidth = currentDisplay.workArea.width;
+        const screenX = currentDisplay.workArea.x;
         const [_, h] = win.getSize();
 
         if (prefs.compactMode) {
-            win.setBounds({ x: screenWidth - 240, y: 0, width: 240, height: h });
+            win.setBounds({ x: screenX + screenWidth - 240, y: 0, width: 240, height: h });
         } else {
-            win.setBounds({ x: screenWidth - 300, y: 0, width: 300, height: h });
+            win.setBounds({ x: screenX + screenWidth - 300, y: 0, width: 300, height: h });
         }
 
         win.setAlwaysOnTop(!!prefs.alwaysOnTop);
     });
+
 
 }
 
@@ -90,7 +96,12 @@ app.whenReady().then(() => {
     });
 
     ipcMain.handle('open-log-analyzer', () => {
-        const analyzerWindow = new BrowserWindow({
+        if (analyzerWindow && !analyzerWindow.isDestroyed()) {
+            analyzerWindow.focus();
+            return;
+        }
+
+        analyzerWindow = new BrowserWindow({
             width: 900,
             height: 600,
             title: 'Log Analyzer',
@@ -106,7 +117,12 @@ app.whenReady().then(() => {
         if (app.isPackaged) {
             analyzerWindow.removeMenu();
         }
+
+        analyzerWindow.on('closed', () => {
+            analyzerWindow = null;
+        });
     });
+
 
     ipcMain.handle('get-log-files', async () => {
         const logsDir = path.join(app.getPath('userData'), 'logs');
